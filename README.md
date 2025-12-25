@@ -1,73 +1,52 @@
-![Version](https://img.shields.io/badge/version-2.0-blue) ![Platform](https://img.shields.io/badge/platform-Arduino-teal) ![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-2.1-blue) ![Platform](https://img.shields.io/badge/platform-Arduino-teal) ![License](https://img.shields.io/badge/license-MIT-green)
 
 # Pro Micro Macro Board
 
-An advanced 3-button macro keyboard script for the SparkFun Pro Micro (ATmega32U4). It features chorded inputs, togglable media controls, and mode persistence without blocking the CPU.
+An advanced 3-button macro keyboard script for the SparkFun Pro Micro (ATmega32U4). V2.1 features hyper-responsive inputs, repeating volume keys, and context-aware layering.
 
 **Author:** MWDiss  
 **Date:** Dec 1, 2025
 
 ## Features
 
-*   **Zero Delay:** Uses non-blocking logic (`millis`) for instant response.
-*   **Context Modes:** Switch between Productivity and Media modes.
-*   **Chord Support:** Press multiple keys to unlock hidden functions (Clipboard history).
-*   **Visual Feedback:** Flashes your main keyboard's Scroll Lock light when switching modes.
+*   **Fast Response:** Optimized with minimal debounce for fast key taps.
+*   **Media Mode:** Hold a key to switch layer, granting access to music/volume controls.
+*   **Auto-Repeat:** Volume keys repeat when held (just like a standard keyboard).
+*   **Zero CPU Load:** Non-blocking code ensures no PC slowdowns.
+*   **Visual Feedback:** Flashes `Scroll Lock` on mode change.
 
 ## Controls
 
 ### Normal Mode (Productivity)
 
-| Button | Action | Hold (0.6s) |
-| :--- | :--- | :--- |
-| **Pin 16** | Copy `Ctrl+C` | Toggle **Media Mode** |
-| **Pin 10** | Paste `Ctrl+V` | *(None)* |
-| **Pin 18** | Plain Paste `Ctrl+Shift+V`* | Toggle key to **Select All** |
+| Button | Pin | Single Tap | Hold (0.6s) |
+| :--- | :--- | :--- | :--- |
+| **Btn 1** | 16 | Copy `Ctrl+C` | Toggle **Media Mode** |
+| **Btn 2** | 10 | Paste `Ctrl+V` | Open **Clipboard** `Win+V` |
+| **Btn 3** | 18 | Plain Paste* | Toggle Function `Plain/SelectAll` |
 
-*\*Note: Pin 18 toggles between "Plain Paste" and "Select All" when held.*
+*\*Note: Button 3 can be toggled to perform `Ctrl+A` (Select All) by holding it for 0.6s.*
 
 ### Media Mode
 
-| Button | Action |
-| :--- | :--- |
-| **Pin 16** | Play / Pause |
-| **Pin 10** | Volume Down |
-| **Pin 18** | Volume Up |
-
-### Global Combo
-
-| Combination | Action |
-| :--- | :--- |
-| **Pin 10 + Pin 18** | Open Windows Clipboard `Win + V` |
+| Button | Action | Behavior |
+| :--- | :--- | :--- |
+| **Btn 1** | Play / Pause | Action on Release |
+| **Btn 2** | Volume Down | **Repeat on Hold** |
+| **Btn 3** | Volume Up | **Repeat on Hold** |
 
 ## Configuration
 
-You can easily adjust settings at the top of the `.ino` file
+Adjust settings at the top of `macro_board_v2_1.ino`
 
 ```cpp
-// Change which pins your buttons use
-const int PIN_COPY  = 16;
-
-// Adjust how long to hold to switch modes (default 600ms)
-const int HOLD_TIME = 600;
-
-// Turn off scroll lock flashing if annoying
-const bool USE_SCROLL_LOCK = true; 
+const int HOLD_TIME = 600;      // Time to hold before special action triggers
+const int DEBOUNCE  = 10;       // Lower = more responsive, Higher = safe from noise
+const bool USE_SCROLL_LOCK = true; // Set false to disable light flashing
 ```
 
-## Setup & Installation
+## Setup & Troubleshooting
 
-1.  **Install Arduino IDE:** [Download here](https://www.arduino.cc/en/software).
-2.  **Add HID-Project:**
-    *   Go to `Tools` > `Manage Libraries...`
-    *   Search for **HID-Project** by NicoHood.
-    *   Install it.
-3.  **Select Board:**
-    *   Tools > Board > SparkFun AVR Boards > **SparkFun Pro Micro**.
-4.  **Upload:** Connect via USB and click the Upload arrow.
-
-### Troubleshooting Uploads
-If the upload fails or the board isn't found
-1.  Double-tap the **GND** and **RST** pins with a wire.
-2.  Select the new COM port that appears.
-3.  Hit Upload immediately.
+1.  **Requirement:** Install **HID-Project** library by NicoHood in Arduino IDE (`Tools > Manage Libraries`).
+2.  **Upload Failed?** Double-tap `GND` + `RST` pins on the board to reset the bootloader, then quickly upload.
+3.  **Buttons reversed?** Update `const int PIN_xxx` variables at the top of the file.
