@@ -1,52 +1,76 @@
-![Version](https://img.shields.io/badge/version-2.1-blue) ![Platform](https://img.shields.io/badge/platform-Arduino-teal) ![License](https://img.shields.io/badge/license-MIT-green)
-
 # Pro Micro Macro Board
 
-An advanced 3-button macro keyboard script for the SparkFun Pro Micro (ATmega32U4). V2.1 features hyper-responsive inputs, repeating volume keys, and context-aware layering.
+![Version](https://img.shields.io/badge/version-3.4-blue) ![Platform](https://img.shields.io/badge/platform-Arduino-teal) ![License](https://img.shields.io/badge/license-MIT-green)
+
+A professional, low-latency 3-button macro keyboard designed for the **SparkFun Pro Micro (ATmega32U4)**. Featuring distinct handling for **instantaneous modifiers** (Ctrl/Shift) and **intelligent macro keys** to ensure zero ghosting. V3.4 introduces optimized repeater logic for list navigation and volume control.
 
 **Author:** MWDiss  
-**Date:** Dec 1, 2025
+**Date:** Jan 2026
 
-## Features
+---
 
-*   **Fast Response:** Optimized with minimal debounce for fast key taps.
-*   **Media Mode:** Hold a key to switch layer, granting access to music/volume controls.
-*   **Auto-Repeat:** Volume keys repeat when held (just like a standard keyboard).
-*   **Zero CPU Load:** Non-blocking code ensures no PC slowdowns.
-*   **Visual Feedback:** Flashes `Scroll Lock` on mode change.
+## Key Features
 
-## Controls
+*   **Zero-Latency Modifiers:** Normal Layer Ctrl/Shift operate via direct pass-through for gaming/shortcuts.
+*   **Intelligent Auto-Repeat:** 
+    *   Media Volume and Arrow keys tap once on press, then wait 0.6s before repeating, allowing for both precise clicks and fast scrubbing.
+*   **Dual-Layer Mode:** Toggle between `Productivity` and `Media` layers.
+*   **Mode-Aware Keys:** Ctrl/Shift morph into repeating Arrow keys when in Media Mode.
+*   **Win+Tab Interrupter:** Hold Enter (0.8s) to trigger Task View.
 
-### Normal Mode (Productivity)
+---
 
-| Button | Pin | Single Tap | Hold (0.6s) |
+## Layout Mappings
+
+### Default Layer (Productivity)
+
+| Button | Pin | Tap Behavior (Release) | Hold (0.6s) |
 | :--- | :--- | :--- | :--- |
-| **Btn 1** | 16 | Copy `Ctrl+C` | Toggle **Media Mode** |
-| **Btn 2** | 10 | Paste `Ctrl+V` | Open **Clipboard** `Win+V` |
-| **Btn 3** | 18 | Plain Paste* | Toggle Function `Plain/SelectAll` |
+| **Copy** | 14 | `Ctrl + C` | Toggle Layer (**Media**) |
+| **Paste** | 16 | `Ctrl + V` | Open **Clipboard** (`Win+V`) |
+| **Alt** | 18 | Plain Paste / Select All* | Toggle Config (`Select All`) |
+| **Enter** | 20 | `Enter` (Instant) | `Win + Tab` (Task View) |
+| **Ctrl** | 7 | `Ctrl` (Holdable) | - |
+| **Shift** | 5 | `Shift` (Holdable) | - |
 
-*\*Note: Button 3 can be toggled to perform `Ctrl+A` (Select All) by holding it for 0.6s.*
+*\*Note: Hold Button 3 to toggle between Plain Paste (`Ctrl+Shift+V`) and Select All (`Ctrl+A`).*
 
-### Media Mode
+### Media Layer
 
-| Button | Action | Behavior |
+| Button | Action | Hold Behavior (0.6s delay) |
 | :--- | :--- | :--- |
-| **Btn 1** | Play / Pause | Action on Release |
-| **Btn 2** | Volume Down | **Repeat on Hold** |
-| **Btn 3** | Volume Up | **Repeat on Hold** |
+| **Copy** | Play / Pause | Action on Release |
+| **Paste** | Volume Down | **Auto-Repeats** |
+| **Alt** | Volume Up | **Auto-Repeats** |
+| **Enter** | Mute | Action on Release |
+| **Ctrl** | `Down Arrow` | **Auto-Repeats** |
+| **Shift** | `Up Arrow` | **Auto-Repeats** |
+
+---
 
 ## Configuration
 
-Adjust settings at the top of `macro_board_v2_1.ino`
+Adjust behavior in `macro_board_v3_4.ino`:
 
 ```cpp
-const int HOLD_TIME = 600;      // Time to hold before special action triggers
-const int DEBOUNCE  = 10;       // Lower = more responsive, Higher = safe from noise
-const bool USE_SCROLL_LOCK = true; // Set false to disable light flashing
+// Timings
+const int HOLD_TIME_MACRO = 600;  // Time to hold to swap layers
+const int REPEAT_DELAY    = 600;  // Delay before Volume/Arrow keys start spamming
+const int REPEAT_RATE     = 100;  // Speed of spamming (lower is faster)
+
+// Visuals
+const bool USE_SCROLL_LOCK = true; 
 ```
 
-## Setup & Troubleshooting
+## Hardware Hookup
 
-1.  **Requirement:** Install **HID-Project** library by NicoHood in Arduino IDE (`Tools > Manage Libraries`).
-2.  **Upload Failed?** Double-tap `GND` + `RST` pins on the board to reset the bootloader, then quickly upload.
-3.  **Buttons reversed?** Update `const int PIN_xxx` variables at the top of the file.
+Connect each switch between the designated **Pin** and the **GND** pin.
+
+| Button | Pins | Note |
+| :--- | :--- | :--- |
+| **Macro Copy** | Pin 14 | Digital Pin |
+| **Macro Paste** | Pin 16 | Digital Pin |
+| **Macro Alt** | Pin 18 | Analog A0 |
+| **Fast Enter** | Pin 20 | Analog A2 |
+| **Fast Ctrl** | Pin 7 | Digital Pin |
+| **Fast Shift** | Pin 5 | Digital Pin |
